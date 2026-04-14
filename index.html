@@ -2,29 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pantry QR Manager</title>
+  <title>Pantry Manager</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>📦 Pantry Manager</h1>
 
-<div class="container">
-  <input type="text" id="foodInput" placeholder="Enter food item">
-  <button onclick="addItem()">Add</button>
+<div class="tabs">
+  <button onclick="showTab('inventory')">Inventory</button>
+  <button onclick="showTab('qr')">QR Tools</button>
 </div>
 
-<ul id="pantryList"></ul>
+<!-- INVENTORY TAB -->
+<div id="inventory" class="tab active">
+  <h2>📊 Inventory</h2>
 
-<hr>
+  <button onclick="addRow()">➕ Add Item</button>
 
-<h2>📷 Scan QR Code</h2>
-<video id="preview"></video>
+  <table id="inventoryTable">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Location</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-<hr>
+<!-- QR TAB -->
+<div id="qr" class="tab">
+  <h2>🔗 QR Code</h2>
+  <canvas id="qrcode"></canvas>
 
-<h2>🔗 Generate QR Code</h2>
-<canvas id="qrcode"></canvas>
+  <h3>📷 Scan</h3>
+  <div id="reader"></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>

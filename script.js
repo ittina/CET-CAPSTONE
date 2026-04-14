@@ -1,69 +1,68 @@
-let pantry = JSON.parse(localStorage.getItem("pantry")) || [];
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
 
-// Display items
-function renderList() {
-  const list = document.getElementById("pantryList");
-  list.innerHTML = "";
+// TAB SWITCHING
+function showTab(tabId) {
+  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
 
-  pantry.forEach((item, index) => {
-    const li = document.createElement("li");
+// RENDER TABLE
+function renderTable() {
+  const tbody = document.querySelector("#inventoryTable tbody");
+  tbody.innerHTML = "";
 
-    li.innerHTML = `
-      ${item}
-      <button onclick="deleteItem(${index})">❌</button>
+  inventory.forEach((item, index) => {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td contenteditable="true" oninput="updateCell(${index}, 'name', this.innerText)">${item.name}</td>
+      <td contenteditable="true" oninput="updateCell(${index}, 'qty', this.innerText)">${item.qty}</td>
+      <td contenteditable="true" oninput="updateCell(${index}, 'location', this.innerText)">${item.location}</td>
+      <td><button onclick="deleteRow(${index})">❌</button></td>
     `;
 
-    list.appendChild(li);
+    tbody.appendChild(row);
   });
 
-  localStorage.setItem("pantry", JSON.stringify(pantry));
+  localStorage.setItem("inventory", JSON.stringify(inventory));
 }
 
-// Add item
-function addItem() {
-  const input = document.getElementById("foodInput");
-  const value = input.value.trim();
-
-  if (value) {
-    pantry.push(value);
-    input.value = "";
-    renderList();
-  }
+// ADD ROW
+function addRow() {
+  inventory.push({ name: "New Item", qty: "1", location: "Pantry" });
+  renderTable();
 }
 
-// Delete item
-function deleteItem(index) {
-  pantry.splice(index, 1);
-  renderList();
+// DELETE ROW
+function deleteRow(index) {
+  inventory.splice(index, 1);
+  renderTable();
 }
 
-// Generate QR code (link to THIS page)
-const currentURL = window.location.href;
+// UPDATE CELL
+function updateCell(index, field, value) {
+  inventory[index][field] = value;
+  localStorage.setItem("inventory", JSON.stringify(inventory));
+}
 
-QRCode.toCanvas(document.getElementById("qrcode"), currentURL, function (error) {
-  if (error) console.error(error);
-});
+// QR GENERATION
+QRCode.toCanvas(document.getElementById("qrcode"), window.location.href);
 
-// QR Scanner
+// QR SCANNER
 function startScanner() {
-  const html5QrCode = new Html5Qrcode("preview");
+  const qr = new Html5Qrcode("reader");
 
-  html5QrCode.start(
+  qr.start(
     { facingMode: "environment" },
-    {
-      fps: 10,
-      qrbox: 250
-    },
+    { fps: 10, qrbox: 250 },
     (decodedText) => {
       window.location.href = decodedText;
-    },
-    (error) => {
-      console.warn(error);
     }
   );
 }
 
 startScanner();
 
-// Initial render
-renderList();
+// INIT
+renderTable();
+showTab('inventory');
